@@ -401,6 +401,8 @@ class Lexer(object):
                 | \\[a-zA-Z!-\/:-@\[-`{-~] # or escaped characters
                 | \\x[0-9a-fA-F]{2}        # or hex_escape_sequence
                 | \\u[0-9a-fA-F]{4}        # or unicode_escape_sequence
+                | \\0                      # null character
+                | \\                       # backslash character
             )*?                            # zero or many times
             (?: \\\n                       # multiline ?
               (?:
@@ -408,6 +410,8 @@ class Lexer(object):
                 | \\[a-zA-Z!-\/:-@\[-`{-~] # or escaped characters
                 | \\x[0-9a-fA-F]{2}        # or hex_escape_sequence
                 | \\u[0-9a-fA-F]{4}        # or unicode_escape_sequence
+                | \\0                      # null character
+                | \\                       # backslash character
               )*?                          # zero or many times
             )*
         ")                                 # closing double quote
@@ -418,6 +422,8 @@ class Lexer(object):
                 | \\[a-zA-Z!-\/:-@\[-`{-~] # or escaped characters
                 | \\x[0-9a-fA-F]{2}        # or hex_escape_sequence
                 | \\u[0-9a-fA-F]{4}        # or unicode_escape_sequence
+                | \\0                      # null character
+                | \\                       # backslash character
             )*?                            # zero or many times
             (?: \\\n                       # multiline ?
               (?:
@@ -425,6 +431,8 @@ class Lexer(object):
                 | \\[a-zA-Z!-\/:-@\[-`{-~] # or escaped characters
                 | \\x[0-9a-fA-F]{2}        # or hex_escape_sequence
                 | \\u[0-9a-fA-F]{4}        # or unicode_escape_sequence
+                | \\0                      # null character
+                | \\                       # backslash character
               )*?                          # zero or many times
             )*
         ')                                 # closing single quote
@@ -440,9 +448,10 @@ class Lexer(object):
         return token
 
     # XXX: <ZWNJ> <ZWJ> ?
-    identifier_start = r'(?:' + r'[a-zA-Z_$]' + r'|' + LETTER + r')+'
+    identifier_start = r'(?:' + r'[a-zA-Z_$]' + r'|' + r'[^\x00-\x7F]' + r'|' + LETTER + r')+'
     identifier_part = (
         r'(?:' + COMBINING_MARK + r'|' + r'[0-9a-zA-Z_$]' + r'|' + DIGIT +
+        r'|' + r'[^\x00-\x7F]' +
         r'|' + CONNECTOR_PUNCTUATION + r')*'
         )
     identifier = identifier_start + identifier_part

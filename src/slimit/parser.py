@@ -335,6 +335,7 @@ class Parser(object):
         """property_name : identifier
                          | string_literal
                          | numeric_literal
+                         | reserved_keyword
         """
         p[0] = p[1]
 
@@ -344,6 +345,7 @@ class Parser(object):
                        | function_expr
                        | member_expr LBRACKET expr RBRACKET
                        | member_expr PERIOD identifier
+                       | member_expr PERIOD reserved_keyword
                        | NEW member_expr arguments
         """
         if len(p) == 2:
@@ -360,6 +362,7 @@ class Parser(object):
                             | function_expr
                             | member_expr_nobf LBRACKET expr RBRACKET
                             | member_expr_nobf PERIOD identifier
+                            | member_expr_nobf PERIOD reserved_keyword
                             | NEW member_expr arguments
         """
         if len(p) == 2:
@@ -394,6 +397,7 @@ class Parser(object):
                      | call_expr arguments
                      | call_expr LBRACKET expr RBRACKET
                      | call_expr PERIOD identifier
+                     | call_expr PERIOD reserved_keyword
         """
         if len(p) == 3:
             p[0] = ast.FunctionCall(p[1], p[2], lineno=p.lineno(1))
@@ -407,6 +411,7 @@ class Parser(object):
                           | call_expr_nobf arguments
                           | call_expr_nobf LBRACKET expr RBRACKET
                           | call_expr_nobf PERIOD identifier
+                          | call_expr_nobf PERIOD reserved_keyword
         """
         if len(p) == 3:
             p[0] = ast.FunctionCall(p[1], p[2], lineno=p.lineno(1))
@@ -1253,6 +1258,46 @@ class Parser(object):
             p[0] = ast.FuncExpr(
                 identifier=None, parameters=p[3], elements=p[6],
                 lineno=p.lineno(3))
+
+    def p_reserved_keyword(self, p):
+        """reserved_keyword : CASE
+                            | DEFAULT
+                            | SWITCH
+                            | CATCH
+                            | BREAK
+                            | CONTINUE
+                            | DEBUGGER
+                            | DELETE
+                            | DO
+                            | ELSE
+                            | FINALLY
+                            | FOR
+                            | FUNCTION
+                            | IF
+                            | IN
+                            | INSTANCEOF
+                            | NEW
+                            | RETURN
+                            | THIS
+                            | THROW
+                            | TRY
+                            | TYPEOF
+                            | VAR
+                            | VOID
+                            | WHILE
+                            | WITH
+                            | NULL
+                            | TRUE
+                            | FALSE
+                            | CLASS
+                            | CONST
+                            | ENUM
+                            | EXPORT
+                            | EXTENDS
+                            | IMPORT
+                            | SUPER
+        """
+        p[0] = ast.Identifier(p[1])
 
     def p_function_expr_2(self, p):
         """
